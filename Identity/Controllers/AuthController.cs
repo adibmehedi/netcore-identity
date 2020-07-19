@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Identity.Models;
+using Identity.Interfaces;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Identity.Controllers
@@ -21,32 +22,39 @@ namespace Identity.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
-        public AuthController(ILogger<AuthController> logger)
+        private IUserService _userService;
+        private IAuthService _authService;
+        public AuthController(
+            ILogger<AuthController> logger,
+            IUserService userService,
+            IAuthService authService
+        )
         {
             _logger = logger;
+            _userService = userService;
+            _authService = authService;
         }
 
         [HttpGet]
         public string Get()
         {
+            
             return "Hello World";
+
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] UserCredential value ) {
+        public IActionResult Post([FromBody] UserCredential value ) 
+        {
             _logger.LogInformation("UserCredential: inside");
-            // check in Controller for now
-            //send JSON reuest JWT token
-            //return Ok(JwtTokenService.GenerateToken("john"));
 
-            var model = new
+            if (_authService.validate(value.username, value.password))
             {
-                success = true,
-                token = JwtTokenService.GenerateToken("john")
-            };
+                var model = new { success = true, token = _authService.getAccessToken(value.username) };
+                return Ok(model);
+            }
 
-            _logger.LogInformation("UserCredential: token send");
-            return Ok(model);
+            return StatusCode(403);
         }
 
 

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Identity.Services
+namespace Identity.Providers
 {
-    public class JwtTokenService
+    public class JwtTokenProvider
     {
         private const string Secret = "db3OIsj+BXE9NZDy0t8W3TcNekrF+2d/1sFnWG4HnV8TZY30iTOdtVWJG8abWvB1GlOgJuQZdcF2Luqm/hccMw==";
         public static string GenerateToken(string username) {
